@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem.EnhancedTouch;
 
@@ -5,6 +6,8 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody rb;
     private Vector2 movementInput;
+    public static event Action OnPlayerDeath;
+    public static event Action OnPlayerWin;
 
     [Header("Movimiento")]
     [SerializeField] private float velocity;
@@ -32,7 +35,16 @@ public class PlayerController : MonoBehaviour
         InputHandler.movementPlayer -= MovementPlayer;
         InputHandler.jumpEvent -= Jump;
     }
+    private void FixedUpdate()
+    {
+        
 
+        rb.linearVelocity = new Vector3(
+            movementInput.x * velocity,
+            rb.linearVelocity.y,
+            movementInput.y * velocity
+        );
+    }
     private void MovementPlayer(Vector2 value)
     {
         movementInput = value;
@@ -47,4 +59,20 @@ public class PlayerController : MonoBehaviour
 
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Death"))
+        {
+            OnPlayerDeath?.Invoke();
+            Destroy(this.gameObject);
+        }
+
+        if (other.CompareTag("coin"))
+        {
+            OnPlayerWin?.Invoke();
+        }
+    }
+
+
 }

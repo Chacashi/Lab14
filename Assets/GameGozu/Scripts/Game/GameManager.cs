@@ -21,7 +21,17 @@ public class GameManager : MasterManager
         Instance = this;
     }
 
+    private void OnEnable()
+    {
+        PlayerController.OnPlayerDeath += Lose;
+        PlayerController.OnPlayerWin += Win;
+    }
 
+    private void OnDisable()
+    {
+        PlayerController.OnPlayerDeath -= Lose;
+        PlayerController.OnPlayerWin -= Win;
+    }
     public void PauseGame(CanvasGroup pausePanel)
     {
         if (pausePanel.alpha == 0)
